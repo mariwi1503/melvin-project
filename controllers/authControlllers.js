@@ -2,7 +2,6 @@
 
 const authModel = require('../models/authModel')
     , bcrypt = require('../libraries/bcryptLib')
-    , sendMail = require('../helper/sendEmail')
     , jwtLib = require('../libraries/jwtLib')
 
 module.exports = {
@@ -12,7 +11,6 @@ module.exports = {
 
             // user exist check
             const user = await authModel.getUserByUsername(username)
-            console.log("🚀 ~ login: ~ user:", user)
             if(!user) throw new Error('User is not registred, wanna signup?')
 
             // validate password
