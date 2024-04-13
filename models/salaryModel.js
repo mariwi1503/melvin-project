@@ -83,7 +83,7 @@ module.exports = {
     },
     updateSalaryData: async (id, data) => {
         try {
-            const query = `UPDATE jurnal_ars_gaji_karyawan SET ? jurnal_ars_gaji_karyawan`
+            const query = `UPDATE jurnal_ars_gaji_karyawan SET ? WHERE ID = ?`
             const [rows, fields] = await poolTwo.query(query, [data, id])
             return
         } catch (error) {

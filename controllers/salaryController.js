@@ -65,7 +65,7 @@ module.exports = {
             res.status(200).json({
                 status: 200,
                 success: true,
-                data: {id: data.id},
+                data,
                 message: 'Successfuly fetching data'
             })
         } catch (error) {
