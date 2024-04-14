@@ -1,6 +1,6 @@
 const express = require('express')
     , config = require('./config')
-    , morgan = require('morgan')
+    // , morgan = require('morgan')
     , authRoute = require('./routes/authRoute')
     , salaryRoute = require('./routes/salaryRoute')
     , cors = require('cors')
@@ -10,7 +10,7 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(morgan('dev'))
+// app.use(morgan('dev'))
 app.use(cors())
     
 // routes
