@@ -5,7 +5,7 @@ const { jwtSecret, jwtRefresh } = require('../config')
 
 module.exports = {
     generate: (data) => {
-        return jwt.sign(data, jwtSecret, {expiresIn:3600})
+        return jwt.sign(data, jwtSecret, {expiresIn:600})
     },
     verify: (token) => {
         return jwt.verify(token, jwtSecret)
