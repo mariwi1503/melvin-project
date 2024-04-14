@@ -66,7 +66,7 @@ module.exports = {
                 status: 200,
                 success: true,
                 data,
-                message: 'Successfuly fetching data'
+                message: 'Successfuly insert data'
             })
         } catch (error) {
             res.status(400).json({
