@@ -37,7 +37,7 @@ module.exports = {
                 WHERE MONTH(periode) = ?
                 AND LOWER(nama_karyawan) LIKE LOWER(?)`
                 queryParams = [month, `%${employeeName}%`]
-            }else if (year) {
+            } else if (year) {
                 query = `
                 SELECT *
                 FROM jurnal_ars_gaji_karyawan

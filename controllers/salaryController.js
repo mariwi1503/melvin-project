@@ -2,6 +2,11 @@
 
 const salaryModel = require('../models/salaryModel')
 const validation = require('../validation')
+const exceljs = require('exceljs')
+const moment = require('moment');
+const PDFDocument = require('pdfkit')
+const fs = require('fs');
+
 
 module.exports = {
     getAllSalaryData: async (req, res) => {
@@ -114,6 +119,159 @@ module.exports = {
                 success: true,
                 message: 'Successfuly delete data'
             })
+        } catch (error) {
+            res.status(400).json({
+                status: 400,
+                success: false,
+                message: error.message
+            })
+        }
+    },
+    exportToExcel: async (req, res) => {
+        try {
+            const exportType = req.params.exportType
+            if (exportType !== 'pdf' && exportType !== 'excel') throw new Error('Invalid export format')
+
+            const salaries = await salaryModel.getSalaries()
+            if (salaries.length === 0) throw new Error('Tidak ada data gaji')
+
+            let workBook = new exceljs.Workbook()
+            const sheet = workBook.addWorksheet('Data')
+
+            sheet.columns = [
+                {header: 'NO.', key: 'no', width: 5},
+                {header: 'NAMA', key: 'nama_karyawan', width: 30},
+                {header: 'JML PENGHASILAN', key: 'jumlah_penghasilan', width: 20},
+                {header: 'KODE PPH21', key: 'kode_pph21', width: 30},
+                {header: 'NOMINAL PPH21', key: 'nominal_pph21', width: 20},
+                {header: 'PTKP TAHUNAN', key: 'ptkp_tahunan', width: 20},
+                {header: 'DASAR PENGENAAN PAJAK', key: 'dasar_pengenaan_pajak', width: 30},
+                {header: 'TARIF', key: 'tarif', width: 20},
+                {header: 'TAKE HOMEPAY', key: 'nominal_takehomepay', width: 20},
+                {header: 'PERIODE', key: 'periode', width: 15},
+            ]
+
+            await salaries.map((x, i) => {
+                sheet.addRow({
+                    no: i+1,
+                    nama_karyawan: x.nama_karyawan,
+                    jumlah_penghasilan: 'Rp ' + new Intl.NumberFormat('id-ID').format(x.jumlah_penghasilan),
+                    kode_pph21: x.kode_pph21,
+                    nominal_pph21: 'Rp ' + new Intl.NumberFormat('id-ID').format(x.nominal_pph21),
+                    ptkp_tahunan: 'Rp ' + new Intl.NumberFormat('id-ID').format(x.ptkp_tahunan),
+                    dasar_pengenaan_pajak: 'Rp ' + new Intl.NumberFormat('id-ID').format(x.dasar_pengenaan_pajak),
+                    tarif: 'Rp ' + new Intl.NumberFormat('id-ID').format(x.tarif),
+                    nominal_takehomepay: 'Rp ' + new Intl.NumberFormat('id-ID').format(x.nominal_takehomepay),
+                    periode: moment(x.periode).format('YYYY-MM-DD')
+                })
+            })
+
+            sheet.getCell('A1').alignment = { horizontal: 'center' };
+            sheet.getCell('B1').alignment = { horizontal: 'center' };
+            sheet.getCell('C1').alignment = { horizontal: 'center' };
+            sheet.getCell('D1').alignment = { horizontal: 'center' };
+            sheet.getCell('E1').alignment = { horizontal: 'center' };
+            sheet.getCell('F1').alignment = { horizontal: 'center' };
+            sheet.getCell('G1').alignment = { horizontal: 'center' };
+            sheet.getCell('H1').alignment = { horizontal: 'center' };
+            sheet.getCell('I1').alignment = { horizontal: 'center' };
+            sheet.getCell('J1').alignment = { horizontal: 'center' };
+            sheet.getColumn(10).alignment = { horizontal: 'center' };
+
+                const headerRow = sheet.getRow(1);
+                headerRow.eachCell(cell => {
+                    cell.font = { size: 12, bold: true };
+                    cell.alignment = { horizontal: 'center' };
+                });
+
+                // Apply styling to data rows
+                sheet.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) {
+                        row.eachCell(cell => {
+                            cell.font = { size: 11 };
+                            cell.alignment = { horizontal: 'center' };
+                        });
+                    }
+                });
+
+            if (exportType === 'excel') {
+                res.setHeader(
+                    "Content-Type",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+                res.setHeader(
+                    "Content-Disposition",
+                    "atatchment;filename=" + "jurnal.xlsx"
+                )
+    
+                await workBook.xlsx.write(res)
+            } else {
+                const pdfDoc = new PDFDocument();
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', 'inline; filename="Data.pdf"');
+
+                // Set initial position for text
+                let xPos = 0;
+                let yPos = 50;
+
+                sheet.eachRow((row, rowNumber) => {
+                    row.eachCell((cell, colNumber) => {
+                        let width = 50
+                        switch (colNumber) {
+                            case 1:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 40;
+                            break;
+                            case 2:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width:70, align: 'center' });
+                                xPos += 70;
+                            break;
+                            case 3:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 70;
+                            break;
+                            case 4:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 60;
+                            break;
+                            case 5:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 60;
+                            break;
+                            case 6:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 60;
+                            break;
+                            case 7:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 60;
+                            break;
+                            case 8:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 60;
+                            break;
+                            case 9:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 60;
+                            break;
+                            case 10:
+                                pdfDoc.fontSize(7).text(cell.text, xPos, yPos, { width, align: 'center' });
+                                xPos += 60;
+                            break;
+                        }
+                        
+                    });
+                    if (rowNumber === 1) {
+                    yPos += 30;
+                    } else {
+                        yPos += 20;
+                    }
+                    xPos = 0; // Reset x position for next row
+                });
+
+                pdfDoc.end();
+                pdfDoc.pipe(res);
+            }
         } catch (error) {
             res.status(400).json({
                 status: 400,
