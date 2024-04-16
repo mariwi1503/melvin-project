@@ -8,7 +8,7 @@ module.exports = {
   user: async (req, res, next) => {
     try {
       let token = req.header("Authorization");
-      if (!token) throw new Error("Acces denied!");
+      if (!token) throw new Error("Unauthorized");
 
       let verified = jwtLib.verify(token, config.jwtSecret);
       if (!verified) throw new Error("Unauthorized");
@@ -32,7 +32,7 @@ module.exports = {
       if (!token) throw new Error("Acces denied!");
 
       let verified = jwtLib.verifyRefresh(token, config.jwtRefresh);
-      if (!verified) throw new Error("Unauthorized");
+      if (!verified) throw new Error("Acces denied!");
       const user = await authModel.getUserById(verified.id);
       if (!user) throw new Error("User tidak dikenal");
       if (user.refresh_token != token) throw new Error("Session anda telah habis");
@@ -42,7 +42,7 @@ module.exports = {
 
       next();
     } catch (error) {
-      res.status(401).json({
+      res.status(403).json({
         status: "failed",
         message: error.message,
       });
