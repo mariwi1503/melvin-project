@@ -3,7 +3,7 @@ const router = require("express").Router(),
   auth = require("../middleware/auth");
 
 router.get("/salaries", auth.user, salaryController.getAllSalaryData);
-router.get("/salaries/:exportType", salaryController.exportToExcel);
+router.get("/salaries/:exportType", auth.user, salaryController.exportToExcel);
 router.post("/salary", auth.user, salaryController.insertSalaryData);
 router.get("/salary/:id", auth.user, salaryController.getSalaryDataById);
 router.put("/salary/:id", auth.user, salaryController.updateSalaryData);
