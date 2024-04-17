@@ -84,8 +84,10 @@ module.exports = {
         queryParams = [pphCode];
       }
 
-      query += ` ORDER BY id DESC LIMIT ? OFFSET ?`;
-      queryParams.push(limit, offset);
+      if (limit && offset) {
+        query += ` ORDER BY id DESC LIMIT ? OFFSET ?`;
+        queryParams.push(limit, offset);
+      }
 
       const [rows] = await poolTwo.query(query, queryParams);
       return rows;

@@ -203,18 +203,6 @@ module.exports = {
         });
       });
 
-      sheet.getCell("A1").alignment = { horizontal: "center" };
-      sheet.getCell("B1").alignment = { horizontal: "center" };
-      sheet.getCell("C1").alignment = { horizontal: "center" };
-      sheet.getCell("D1").alignment = { horizontal: "center" };
-      sheet.getCell("E1").alignment = { horizontal: "center" };
-      sheet.getCell("F1").alignment = { horizontal: "center" };
-      sheet.getCell("G1").alignment = { horizontal: "center" };
-      sheet.getCell("H1").alignment = { horizontal: "center" };
-      sheet.getCell("I1").alignment = { horizontal: "center" };
-      sheet.getCell("J1").alignment = { horizontal: "center" };
-      sheet.getColumn(10).alignment = { horizontal: "center" };
-
       const headerRow = sheet.getRow(1);
       headerRow.eachCell((cell) => {
         cell.font = { size: 12, bold: true };
@@ -226,7 +214,6 @@ module.exports = {
         if (rowNumber > 1) {
           row.eachCell((cell) => {
             cell.font = { size: 11 };
-            cell.alignment = { horizontal: "center" };
           });
         }
       });
@@ -240,7 +227,7 @@ module.exports = {
         );
         res.setHeader(
           "Content-Disposition",
-          "atatchment;filename=" + "jurnal.xlsx"
+          "atatchment;filename=" + "data gaji.xlsx"
         );
 
         await workBook.xlsx.write(res);
