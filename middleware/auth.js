@@ -1,8 +1,8 @@
 "use strict";
 
-const jwtLib = require("../libraries/jwtLib");
+const jwtLib = require("../utils/libraries/jwtLib");
 const config = require("../config");
-const authModel = require('../models/authModel')
+const authModel = require("../models/authModel");
 
 module.exports = {
   user: async (req, res, next) => {
@@ -35,7 +35,8 @@ module.exports = {
       if (!verified) throw new Error("Acces denied!");
       const user = await authModel.getUserById(verified.id);
       if (!user) throw new Error("User tidak dikenal");
-      if (user.refresh_token != token) throw new Error("Session anda telah habis");
+      if (user.refresh_token != token)
+        throw new Error("Session anda telah habis");
 
       req.userId = user.id;
       req.user = user;
