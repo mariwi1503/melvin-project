@@ -236,9 +236,15 @@ module.exports = {
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader("Content-Disposition", 'inline; filename="Data.pdf"');
 
+        const title = "DAFTAR GAJI KARYAWAN";
+        pdfDoc.font("Helvetica-Bold").fontSize(15);
+        const titleWidth = pdfDoc.widthOfString(title);
+        const xPosition = (pdfDoc.page.width - titleWidth) / 2;
+        pdfDoc.text(title, xPosition, 50);
+
         // Set initial position for text
         let xPos = 0;
-        let yPos = 50;
+        let yPos = 100;
 
         sheet.eachRow((row, rowNumber) => {
           row.eachCell((cell, colNumber) => {
